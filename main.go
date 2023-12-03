@@ -1,32 +1,24 @@
 package main
 
-import "fmt"
-
-type ContaCorrete struct {
-	titular string
-	numeroAgencia int
-	numerConta int
-	saldo int
-}
-
-func (c *ContaCorrete) sacar(valor int) {
-	if(c.saldo < valor) {
-		fmt.Println("Operação não autorizada, saldo insuficiente");
-		return;
-	}
-	newValue := c.saldo - valor;
-	c.saldo = newValue;
-}
+import (
+	"github.com/gin-gonic/gin"
+	"github.com/iCarlosAugusto/Golang/books"
+	"github.com/iCarlosAugusto/Golang/common/database"
+)
 
 func main() {
-	conta1 := ContaCorrete{
-		titular: "Carlos",
-		numeroAgencia: 001,
-		numerConta: 0031,
-		saldo: 3000,
-	}
 
-	conta1.sacar(4000);
-	fmt.Println(conta1.saldo);
+	router := gin.Default();
+	dbHandler := database.Init("postgres://ejelfjhi:nG_smKv6uovq1GdmNZu9eRg6p0NU8nQT@berry.db.elephantsql.com/ejelfjhi");
+	books.RegisterRoutes(router, dbHandler);
 
+	
+	router.GET("/", func(ctx *gin.Context) {
+		ctx.JSON(200, gin.H{
+				"port":  "3000",
+				"dbUrl": "postgres://ejelfjhi:nG_smKv6uovq1GdmNZu9eRg6p0NU8nQT@berry.db.elephantsql.com/ejelfjhi",
+		})	
+	})
+
+	router.Run("localhost:3000")
 }
